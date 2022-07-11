@@ -13,7 +13,7 @@ import glob
 import pandas as pd
 import matplotlib
 matplotlib.use('agg')
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 log = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def mainAlign(sampleData, experiment_name, genome_index_path, genome_index_name,
 			\n| Alignment |\
 			\n+-----------+")
 
-	# Read sampleData 
+	# Read sampleData
 	unique_bam_list = list()
 	alignstats_total = defaultdict(list)
 	coverageData = open(out_dir + sampleData.split("/")[-1].split(".")[0] + "_cov." + sampleData.split(".")[-1], "w")
@@ -50,7 +50,7 @@ def mainAlign(sampleData, experiment_name, genome_index_path, genome_index_name,
 					with open(out_dir + "mapping_stats.txt","a") as stats_out:
 						stats_out.write("** NEW ALIGNMENT **\n\n")
 					unique_bam, librarySize, alignstats = mapReads(fq, genome_index_path, genome_index_name, snp_index_path, snp_index_name, threads, out_dir, snp_tolerance, keep_temp, mismatches, remap)
-				
+
 				unique_bam_list.append(unique_bam)
 				coverageData.write(unique_bam + "\t" + group + "\t" + str(librarySize) + "\n")
 
@@ -92,7 +92,7 @@ def mapReads(fq, genome_index_path, genome_index_name, snp_index_path, snp_index
 		output_prefix = fq.split("/")[-1].split(".fastq.gz")[0]
 	else:
 		output_prefix = fq.split("/")[-1].split(".fastq")[0]
-	
+
 	if not mismatches == None:
 		mismatch_list = ["--max-mismatches", str(mismatches)]
 	elif mismatches == None:
@@ -113,7 +113,6 @@ def mapReads(fq, genome_index_path, genome_index_name, snp_index_path, snp_index
 
 	log.info("Aligning reads to {}...".format(genome_index_name))
 	subprocess.check_call(map_cmd, stderr = open(out_dir + "align.log", "a"))
-	
 	# remove transloc sam output if no reads present (often the case)
 	readcount = int(pysam.view("-@",str(threads),"-c", out_dir + output_prefix + ".unpaired_transloc").strip())
 	if readcount == 0:
@@ -154,7 +153,7 @@ def mapReads(fq, genome_index_path, genome_index_name, snp_index_path, snp_index
 
 		stats_out.write("{}\nUniquely mapped reads: {:d} ({:.0%}) \nMulti-mapping reads: {:d} ({:.0%}) \nUnmapped reads: {:d} ({:.0%}) \nTotal: {:d}\n\n"\
 			.format(fq.split("/")[-1], unique_count, (unique_count/total_count),multi_count, (multi_count/total_count), unmapped_count, (unmapped_count/total_count), total_count))
-	
+
 	alignstats_dict = defaultdict(list)
 	type_list = ["Uniquely mapped", "Multi-mapped", "Unmapped"]
 	for i, count in enumerate([unique_count, multi_count, unmapped_count]):
